@@ -9952,11 +9952,24 @@
                 
                 this.instruction = "RETROUVE LA BONNE SILHOUETTE !";
 
-                // Emojis list
-                this.pool = [
-                    '🦖', '🦁', '🚗', '✈️', '🐱', '🐰', '🐸', '⛵', 
-                    '🏠', '🍎', '🍌', '🍍', '🍓', '🦋', '🍬', '🚂'
+                // Groups of similar shapes/themes to force observation
+                this.groups = [
+                    // Family 1: Animals with legs (observe tails, ears, shapes)
+                    ['🦖', '🦁', '🐱', '🐶', '🐰', '🐷', '🐏', '🐴', '🦊', '🐻', '🐼', '🦒'],
+                    // Family 2: Flying things / Birds (wings, shapes)
+                    ['🦅', '🦆', '🦉', '🦇', '🦋', '🐝', '🕊️', '🛸'],
+                    // Family 3: Round fruits / Vegetables
+                    ['🍎', '🍊', '🍋', '🍅', '🍑', '🍒', '🍈', '🍓', '🧅', '🎃'],
+                    // Family 4: Vehicles / Transport
+                    ['🚗', '🚌', '🚒', '🚜', '🚂', '✈️', '🚁', '⛵', '🚀', '🚲', '🛶'],
+                    // Family 5: Sea Creatures
+                    ['🐟', '🐙', '🦀', '🦈', '🐬', '🐳', '🦐', '🐢'],
+                    // Family 6: Plants / Trees / Flowers
+                    ['🌲', '🌳', '🌴', '🌵', '🍄', '🌻', '🌷', '🍁']
                 ];
+
+                // Flatten all groups to make the global pool
+                this.pool = this.groups.flat();
                 
                 this.usedIndexes = [];
             }
@@ -9966,12 +9979,14 @@
                 this.usedIndexes = [];
                 this.nextRound();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                Speech.speak(this.instruction);
+            }
             nextRound() {
                 this.round++;
                 this.answered = false;
 
-                // Pick an unused emoji
+                // Pick an unused emoji from the global pool
                 let idx = 0;
                 let attempts = 0;
                 do {
@@ -9982,13 +9997,24 @@
                 this.usedIndexes.push(idx);
                 const correctEmoji = this.pool[idx];
 
-                // Pick 2 decoy emojis
+                // Find the group of the correct emoji to pick similar decoys
+                const activeGroup = this.groups.find(g => g.includes(correctEmoji)) || this.groups[0];
+
+                // Pick 2 decoy emojis from the same group
                 const decoys = [];
-                while (decoys.length < 2) {
-                    const decoyIdx = Math.floor(Math.random() * this.pool.length);
-                    const decoy = this.pool[decoyIdx];
-                    if (decoy !== correctEmoji && !decoys.includes(decoy)) {
-                        decoys.push(decoy);
+                const groupDecoysPool = activeGroup.filter(emoji => emoji !== correctEmoji);
+                
+                const shuffledDecoys = groupDecoysPool.sort(() => Math.random() - 0.5);
+                if (shuffledDecoys.length >= 2) {
+                    decoys.push(shuffledDecoys[0], shuffledDecoys[1]);
+                } else {
+                    // Fallback to global pool
+                    while (decoys.length < 2) {
+                        const decoyIdx = Math.floor(Math.random() * this.pool.length);
+                        const decoy = this.pool[decoyIdx];
+                        if (decoy !== correctEmoji && !decoys.includes(decoy)) {
+                            decoys.push(decoy);
+                        }
                     }
                 }
 
