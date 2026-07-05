@@ -3625,8 +3625,14 @@
                         const url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=fr-FR&client=tw-ob&q=" + encodeURIComponent(text);
                         const audio = new Audio(url);
                         
-                        // Apply custom speed rate (playbackRate works nicely in Chrome/Safari)
-                        audio.playbackRate = this.rate;
+                        // Apply custom speed rate safely after metadata loads (required for iOS Safari)
+                        audio.addEventListener('loadedmetadata', () => {
+                            try {
+                                audio.playbackRate = this.rate;
+                            } catch (e) {
+                                console.warn("Failed to set playbackRate on iOS Safari:", e);
+                            }
+                        });
                         
                         this.currentAudio = audio;
                         
@@ -9198,10 +9204,13 @@
                 this.round = 0;
                 this.nextRound();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                Speech.speak(this.instruction);
+            }
             nextRound() {
                 this.round++;
                 this.answered = false;
+                this.speakInstruction();
 
                 // Pick main category
                 const catKeys = Object.keys(this.categories);
