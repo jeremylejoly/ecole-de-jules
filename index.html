@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>L'École de Jules 🎒</title>
     <link rel="apple-touch-icon" href="images/avatar_leo.png">
+    <script src="https://js.puter.com/v2/"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
@@ -3256,7 +3257,7 @@
                     <label class="voice-settings-option">
                         <input type="radio" name="voice-source" value="google_tts" checked>
                         <div>
-                            <span style="font-weight: 800; color: white; display: block; font-size: 0.95rem;">🌐 Voix Google (Recommandée)</span>
+                            <span style="font-weight: 800; color: white; display: block; font-size: 0.95rem;">🌐 Voix En Ligne (Humaine / Naturelle)</span>
                             <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">Voix humaine très naturelle (nécessite internet)</span>
                         </div>
                     </label>
@@ -3683,24 +3684,46 @@
             },
 
             speakGoogle(text) {
-                // Wrap in a small timeout to let any browser cancel operations resolve
+                // 1. Try Puter.js first (state-of-the-art free AI voice)
+                if (typeof puter !== 'undefined') {
+                    try {
+                        puter.ai.txt2speech(text, "fr-FR")
+                            .then((audio) => {
+                                audio.playbackRate = this.rate;
+                                this.currentAudio = audio;
+                                audio.play().catch(err => {
+                                    console.error("Puter audio play failed, trying Google TTS:", err);
+                                    this.speakGoogleFallback(text);
+                                });
+                            })
+                            .catch(err => {
+                                console.error("Puter TTS generation failed, trying Google TTS:", err);
+                                this.speakGoogleFallback(text);
+                            });
+                        return; // Successfully hand off to Puter
+                    } catch(e) {
+                        console.error("Puter execution error, trying Google TTS:", e);
+                    }
+                }
+                
+                // 2. If Puter is not available, try Google Translate TTS
+                this.speakGoogleFallback(text);
+            },
+
+            speakGoogleFallback(text) {
                 setTimeout(() => {
                     try {
                         const url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=fr-FR&client=tw-ob&q=" + encodeURIComponent(text);
                         const audio = new Audio(url);
-                        
-                        // Apply custom speed rate (playbackRate works nicely in Chrome/Safari)
                         audio.playbackRate = this.rate;
-                        
                         this.currentAudio = audio;
                         
                         audio.play().catch(err => {
-                            console.error("Google TTS failed, falling back to local speech:", err);
-                            // Fallback to local speech if blocked or offline
+                            console.error("Google TTS fallback failed, trying local voice:", err);
                             this.speakLocal(text);
                         });
                     } catch (err) {
-                        console.error("Google TTS execution error, falling back:", err);
+                        console.error("Google TTS execution error, trying local voice:", err);
                         this.speakLocal(text);
                     }
                 }, 80);
@@ -7504,7 +7527,9 @@
                 this.roll();
                 this.speakInstruction();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                Speech.speak(this.instruction);
+            }
 
             roll() {
                 this.isRolling = true;
@@ -9099,11 +9124,14 @@
                 this.round = 0;
                 this.nextRound();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                Speech.speak(this.instruction);
+            }
             nextRound() {
                 this.round++;
                 this.answered = false;
                 this.currentFilledIndex = 0;
+                this.speakInstruction();
 
                 // Pick random pattern type
                 const patterns = ['ABAB', 'AABA', 'ABBA', 'ABC'];
@@ -9801,7 +9829,13 @@
                 this.usedIndexes = [];
                 this.nextRound();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                if (this.currentItem) {
+                    Speech.speak("Trouve la première lettre du mot : " + this.currentItem.word);
+                } else {
+                    Speech.speak(this.instruction);
+                }
+            }
             nextRound() {
                 this.round++;
                 this.answered = false;
@@ -9816,11 +9850,13 @@
                 
                 this.usedIndexes.push(idx);
                 const currentItem = this.pool[idx];
+                this.currentItem = currentItem;
 
                 // Shuffle choices (correct + 2 wrongs)
                 const choices = [currentItem.letter, ...currentItem.wrong].sort(() => Math.random() - 0.5);
 
                 this.renderGame(currentItem, choices);
+                this.speakInstruction();
             }
             renderGame(item, choices) {
                 this.container.innerHTML = `
@@ -10202,8 +10238,11 @@
                 this.candidates.sort(() => Math.random() - 0.5);
 
                 this.renderGame();
+                this.speakInstruction();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                Speech.speak(this.instruction);
+            }
             generateCompatibleCandidate(side) {
                 let target = 0;
                 if (side === 'left') {
@@ -10546,7 +10585,13 @@
                 this.usedIndexes = [];
                 this.nextRound();
             }
-            speakInstruction() {}
+            speakInstruction() {
+                if (this.currentItem) {
+                    Speech.speak("Trouve le mot qui rime avec : " + this.currentItem.tWord);
+                } else {
+                    Speech.speak(this.instruction);
+                }
+            }
             nextRound() {
                 this.round++;
                 this.answered = false;
@@ -10561,6 +10606,7 @@
                 
                 this.usedIndexes.push(idx);
                 const currentItem = this.pool[idx];
+                this.currentItem = currentItem;
 
                 // Build choices
                 const choices = [
@@ -10570,6 +10616,7 @@
                 ].sort(() => Math.random() - 0.5);
 
                 this.renderGame(currentItem, choices);
+                this.speakInstruction();
             }
             renderGame(item, choices) {
                 this.container.innerHTML = `
