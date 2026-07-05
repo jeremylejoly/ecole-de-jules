@@ -3103,17 +3103,12 @@
                         </div>
                         
                         <!-- Action Buttons -->
-                        <div style="display:flex; gap:10px; width:100%;">
+                        <div style="width:100%;">
                             <button id="shop-btn-reset-wear" style="
                                 background:#475569; color:white; border:none; border-radius:16px;
-                                flex:1.2; padding:10px; font-weight:800; font-size:0.9rem; cursor:pointer;
+                                width:100%; padding:12px; font-weight:800; font-size:0.95rem; cursor:pointer;
                                 box-shadow:0 4px 8px rgba(0,0,0,0.25); transition:transform 0.1s;
                             ">🔄 ENLEVER TOUT</button>
-                            <button id="shop-btn-dev-calibrate" style="
-                                background:#fbbf24; color:#0f172a; border:none; border-radius:16px;
-                                flex:1; padding:10px; font-weight:800; font-size:0.9rem; cursor:pointer;
-                                box-shadow:0 4px 8px rgba(0,0,0,0.25); transition:transform 0.1s;
-                            ">🛠️ CALIBRER</button>
                         </div>
                     </div>
                     
@@ -3124,65 +3119,6 @@
                         gap: 12px;
                     ">
                         <!-- Dynamically populated from JS -->
-                    </div>
-
-                    <!-- Calibration Panel -->
-                    <div id="shop-calibration-panel" style="
-                        display: none; flex-direction: column; gap: 12px; width: 300px;
-                        position: fixed; right: 20px; top: 80px; z-index: 9999;
-                        background: rgba(15, 23, 42, 0.98); border: 3px solid #fbbf24; border-radius: 28px;
-                        padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-                    ">
-                        <h3 style="margin: 0; color: #fbbf24; font-size: 1.15rem; font-weight: 900; text-align: center; text-transform: uppercase;">
-                            Calibrage 🛠️
-                        </h3>
-                        
-                        <label style="color: #94a3b8; font-weight: 800; font-size: 0.85rem;">OBJET SÉLECTIONNÉ :</label>
-                        <select id="calib-item-selector" style="
-                            background: #1e293b; color: white; border: 2px solid rgba(255,255,255,0.15);
-                            border-radius: 12px; padding: 8px; font-weight: 800; font-size: 0.9rem; width: 100%;
-                        ">
-                            <!-- Populated dynamically -->
-                        </select>
-                        
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                            <div style="display:flex; justify-content:space-between; color: #cbd5e1; font-size:0.85rem; font-weight:800;">
-                                <span>Position X (Gauche) :</span>
-                                <span id="calib-val-x">50%</span>
-                            </div>
-                            <input type="range" id="calib-slider-x" min="0" max="100" step="0.5" style="width:100%; accent-color:#fbbf24;">
-                            
-                            <div style="display:flex; justify-content:space-between; color: #cbd5e1; font-size:0.85rem; font-weight:800;">
-                                <span>Position Y (Haut) :</span>
-                                <span id="calib-val-y">50%</span>
-                            </div>
-                            <input type="range" id="calib-slider-y" min="0" max="100" step="0.5" style="width:100%; accent-color:#fbbf24;">
-                            
-                            <div style="display:flex; justify-content:space-between; color: #cbd5e1; font-size:0.85rem; font-weight:800;">
-                                <span>Taille (px) :</span>
-                                <span id="calib-val-size">60px</span>
-                            </div>
-                            <input type="range" id="calib-slider-size" min="10" max="180" step="1" style="width:100%; accent-color:#fbbf24;">
-                            
-                            <div style="display:flex; justify-content:space-between; color: #cbd5e1; font-size:0.85rem; font-weight:800;">
-                                <span>Rotation (degrés) :</span>
-                                <span id="calib-val-rotate">0°</span>
-                            </div>
-                            <input type="range" id="calib-slider-rotate" min="-180" max="180" step="1" style="width:100%; accent-color:#fbbf24;">
-                        </div>
-                        
-                        <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
-                            <label style="color: #94a3b8; font-weight: 800; font-size: 0.85rem;">CODE CONFIGURATION JSON :</label>
-                            <textarea id="calib-json-output" readonly style="
-                                width: 100%; height: 110px; background: #0f172a; color: #22c55e;
-                                border: 2px solid rgba(255,255,255,0.1); border-radius: 12px;
-                                padding: 8px; font-family: monospace; font-size: 0.75rem; resize: none;
-                            "></textarea>
-                            <button id="calib-btn-copy" style="
-                                background:#22c55e; color:white; border:none; border-radius:12px;
-                                padding:8px; font-weight:800; font-size:0.85rem; cursor:pointer;
-                            ">📋 COPIER LE CODE</button>
-                        </div>
                     </div>
                     
                 </div>
@@ -4403,118 +4339,6 @@
                     });
                 }
 
-                // Bind dev calibrate button
-                const devBtn = document.getElementById('shop-btn-dev-calibrate');
-                const calibPanel = document.getElementById('shop-calibration-panel');
-                if (devBtn && calibPanel) {
-                    devBtn.addEventListener('click', () => {
-                        AudioSynth.playClick();
-                        if (calibPanel.style.display === 'none') {
-                            calibPanel.style.display = 'flex';
-                            devBtn.style.background = '#ef4444';
-                            devBtn.style.color = 'white';
-                            devBtn.textContent = "🛠️ FERMER";
-                            this.setupCalibrationUI();
-                        } else {
-                            calibPanel.style.display = 'none';
-                            devBtn.style.background = '#fbbf24';
-                            devBtn.style.color = '#0f172a';
-                            devBtn.textContent = "🛠️ CALIBRER";
-                            this.updateCharacterDisplay();
-                        }
-                    });
-                }
-
-                // Bind copy button
-                const copyBtn = document.getElementById('calib-btn-copy');
-                if (copyBtn) {
-                    copyBtn.addEventListener('click', () => {
-                        const out = document.getElementById('calib-json-output');
-                        if (out) {
-                            out.select();
-                            document.execCommand('copy');
-                            AudioSynth.playChirp();
-                            copyBtn.textContent = "📋 COPIÉ !";
-                            setTimeout(() => {
-                                copyBtn.textContent = "📋 COPIER LE CODE";
-                            }, 1500);
-                        }
-                    });
-                }
-            },
-
-            setupCalibrationUI() {
-                const selector = document.getElementById('calib-item-selector');
-                if (!selector) return;
-
-                // Populate selector with ALL items so they can calibrate any item without buying it first
-                selector.innerHTML = this.shopItems.map(item => {
-                    return `<option value="${item.id}">${item.emoji} ${item.label}</option>`;
-                }).join('');
-
-                const updateSliders = () => {
-                    const itemId = selector.value;
-                    if (!itemId) return;
-
-                    // Update character layer display so selected item is shown during calibration
-                    this.updateCharacterDisplay();
-
-                    if (!this.shopCalibrationMap[itemId]) {
-                        this.shopCalibrationMap[itemId] = { x: 50, y: 50, size: 60, rotate: 0 };
-                    }
-                    const cfg = this.shopCalibrationMap[itemId];
-
-                    document.getElementById('calib-slider-x').value = cfg.x;
-                    document.getElementById('calib-val-x').textContent = `${cfg.x}%`;
-
-                    document.getElementById('calib-slider-y').value = cfg.y;
-                    document.getElementById('calib-val-y').textContent = `${cfg.y}%`;
-
-                    document.getElementById('calib-slider-size').value = cfg.size;
-                    document.getElementById('calib-val-size').textContent = `${cfg.size}px`;
-
-                    document.getElementById('calib-slider-rotate').value = cfg.rotate || 0;
-                    document.getElementById('calib-val-rotate').textContent = `${cfg.rotate || 0}°`;
-
-                    this.updateCalibrationJSON();
-                };
-
-                selector.onchange = updateSliders;
-
-                // Bind slider inputs
-                const bindSlider = (sliderId, valId, key) => {
-                    const slider = document.getElementById(sliderId);
-                    const label = document.getElementById(valId);
-                    slider.oninput = () => {
-                        const itemId = selector.value;
-                        if (!itemId) return;
-
-                        if (!this.shopCalibrationMap[itemId]) {
-                            this.shopCalibrationMap[itemId] = { x: 50, y: 50, size: 60, rotate: 0 };
-                        }
-
-                        const val = parseFloat(slider.value);
-                        this.shopCalibrationMap[itemId][key] = val;
-                        label.textContent = key === 'size' ? `${val}px` : key === 'rotate' ? `${val}°` : `${val}%`;
-
-                        this.updateCharacterDisplay();
-                        this.updateCalibrationJSON();
-                    };
-                };
-
-                bindSlider('calib-slider-x', 'calib-val-x', 'x');
-                bindSlider('calib-slider-y', 'calib-val-y', 'y');
-                bindSlider('calib-slider-size', 'calib-val-size', 'size');
-                bindSlider('calib-slider-rotate', 'calib-val-rotate', 'rotate');
-
-                updateSliders();
-            },
-
-            updateCalibrationJSON() {
-                const out = document.getElementById('calib-json-output');
-                if (out) {
-                    out.value = JSON.stringify(this.shopCalibrationMap, null, 2);
-                }
             },
 
             updateShopScreen() {
@@ -4603,17 +4427,12 @@
             },
 
             updateCharacterDisplay() {
-                // Get the currently selected item in the calibrator, if open
-                const selector = document.getElementById('calib-item-selector');
-                const calibPanel = document.getElementById('shop-calibration-panel');
-                const activeCalibId = (calibPanel && calibPanel.style.display !== 'none' && selector) ? selector.value : null;
-
-                // Show or hide layers based on equipped state or active calibration
+                // Show or hide layers based on equipped state
                 this.shopItems.forEach(item => {
                     // 1. Update shop display (large)
                     const layer = document.getElementById('wear-layer-' + item.id);
                     if (layer) {
-                        if (this.equippedItems.includes(item.id) || item.id === activeCalibId) {
+                        if (this.equippedItems.includes(item.id)) {
                             layer.style.display = 'block';
                             
                             // Apply dynamic positioning from calibration map
