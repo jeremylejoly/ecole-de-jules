@@ -3563,7 +3563,15 @@
                 gain.connect(this.ctx.destination);
                 const now = this.ctx.currentTime;
                 osc.type = 'sine';
-                osc.fr        // TEXT TO SPEECH MODULE
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + duration);
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+        };
+
+        // TEXT TO SPEECH MODULE
         const Speech = {
             enabled: true,
             source: 'google_tts', // 'google_tts' or 'web_speech'
