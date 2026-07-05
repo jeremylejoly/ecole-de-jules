@@ -3178,19 +3178,7 @@
             },
 
             playClick() {
-                if (!this.enabled) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                const now = this.ctx.currentTime;
-                osc.frequency.setValueAtTime(450, now);
-                osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
-                gain.gain.setValueAtTime(0.08, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
-                osc.start(now);
-                osc.stop(now + 0.04);
+                // Click sound disabled to keep interface quiet
             },
 
             playCorrect() {
@@ -3448,6 +3436,14 @@
         // TEXT TO SPEECH MODULE
         const Speech = {
             enabled: true,
+            stop() {
+                if (!window.speechSynthesis) return;
+                try {
+                    window.speechSynthesis.cancel();
+                } catch (e) {
+                    console.error("Speech.stop error:", e);
+                }
+            },
             speak(text) {
                 if (!this.enabled || !window.speechSynthesis) return;
                 
@@ -3475,7 +3471,7 @@
                             window.speechSynthesis.resume();
                         }
                         
-                        const u = new SpeechSynthesisUtterance(upperText);
+                        const u = new SpeechSynthesisUtterance(text);
                         u.lang = 'fr-FR';
                         u.rate = 0.90; // Slightly slower for better clarity for 5yo
                         
@@ -4272,11 +4268,14 @@
                 
 
 
-                // If leaving game, destroy instance
-                if (screenId !== 'game' && this.activeGameInstance) {
-                    if (this.activeGameInstance.destroy) this.activeGameInstance.destroy();
-                    this.activeGameInstance = null;
-                    this.activeGameId = null;
+                // If leaving game, destroy instance and stop speech
+                if (screenId !== 'game') {
+                    Speech.stop();
+                    if (this.activeGameInstance) {
+                        if (this.activeGameInstance.destroy) this.activeGameInstance.destroy();
+                        this.activeGameInstance = null;
+                        this.activeGameId = null;
+                    }
                 }
             },
 
