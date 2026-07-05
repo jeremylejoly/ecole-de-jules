@@ -17,7 +17,7 @@ PID=$!
 sleep 1
 
 # Ouvrir Chrome
-open "http://localhost:8000/ecole_de_jules.html"
+open "http://localhost:8000/index.html"
 
 # Attendre la fermeture de la console pour tuer le serveur
 trap "kill $PID" EXIT

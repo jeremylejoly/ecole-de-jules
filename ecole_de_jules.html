@@ -2701,6 +2701,66 @@
             transform: translateY(-2px) scale(0.97) !important;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
         }
+
+        /* Settings Modal & Voice custom elements */
+        .voice-settings-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            background: rgba(30, 41, 59, 0.4);
+            padding: 14px;
+            border-radius: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .voice-settings-option:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .voice-settings-option input[type="radio"]:checked + div {
+            color: #fbbf24;
+        }
+        .voice-settings-option input[type="radio"] {
+            accent-color: #fbbf24;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .voice-help-accordion {
+            margin-top: 15px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 20px;
+            padding: 14px 18px;
+            transition: all 0.3s ease;
+        }
+        .voice-help-toggle {
+            font-weight: 800;
+            color: #60a5fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            user-select: none;
+        }
+        .voice-help-content {
+            margin-top: 10px;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+            display: none;
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+            padding-top: 10px;
+        }
+        .voice-help-content ol {
+            margin: 6px 0 0 16px;
+            padding: 0;
+        }
+        .voice-help-content li {
+            margin-bottom: 6px;
+        }
     </style>
 </head>
 <body>
@@ -2729,6 +2789,9 @@
             </label>
             <button id="btn-sound-global" class="btn-circle active" title="Son Actif">
                 <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </button>
+            <button id="btn-settings-global" class="btn-circle" title="Paramètres de la Voix ⚙️">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             </button>
             <div class="star-badge">
                 <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
@@ -3139,6 +3202,81 @@
         </div>
     </div>
 
+    <!-- Voice Settings Modal Overlay -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 500px; text-align: left; padding: 30px; border-radius: 28px;">
+            <div class="modal-title-text" style="font-size: 1.8rem; text-align: center; margin-bottom: 20px;">Paramètres de la Voix 🎙️</div>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="font-weight: 800; color: #fbbf24; margin-bottom: 8px; font-size: 1.05rem; letter-spacing: 0.02em;">SOURCE DE LA VOIX</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label class="voice-settings-option">
+                        <input type="radio" name="voice-source" value="google_tts" checked>
+                        <div>
+                            <span style="font-weight: 800; color: white; display: block; font-size: 0.95rem;">🌐 Voix Google (Recommandée)</span>
+                            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">Voix humaine très naturelle (nécessite internet)</span>
+                        </div>
+                    </label>
+                    <label class="voice-settings-option">
+                        <input type="radio" name="voice-source" value="web_speech">
+                        <div>
+                            <span style="font-weight: 800; color: white; display: block; font-size: 0.95rem;">💻 Voix de l'appareil (Hors-ligne)</span>
+                            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">Utilise la synthèse vocale intégrée de votre appareil</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Local voices selection block -->
+            <div id="local-voice-settings-block" style="margin-bottom: 20px; display: none;">
+                <div style="font-weight: 800; color: #fbbf24; margin-bottom: 8px; font-size: 1.05rem; letter-spacing: 0.02em;">SÉLECTION DE LA VOIX</div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="select-local-voice" style="flex: 1; padding: 12px; border-radius: 12px; background: #1e293b; border: 2px solid rgba(255,255,255,0.08); color: white; font-family: var(--font-main); font-size: 0.9rem; font-weight: 700; cursor: pointer; outline: none; transition: border-color 0.2s;">
+                    </select>
+                    <button id="btn-test-voice" class="btn-circle" style="width: 44px; height: 44px; flex-shrink: 0;" title="Tester la voix">🔊</button>
+                </div>
+            </div>
+
+            <!-- Vitesse -->
+            <div style="margin-bottom: 20px;">
+                <div style="font-weight: 800; color: #fbbf24; margin-bottom: 8px; font-size: 1.05rem; display: flex; justify-content: space-between; letter-spacing: 0.02em;">
+                    <span>VITESSE DE PAROLE</span>
+                    <span id="label-voice-rate" style="color: #4ade80; font-weight: 900;">0.90x</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">Lent</span>
+                    <input type="range" id="slider-voice-rate" min="0.7" max="1.3" step="0.05" value="0.9" style="flex: 1; accent-color: #fbbf24; cursor: pointer; height: 8px; border-radius: 4px;">
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">Rapide</span>
+                </div>
+            </div>
+
+            <!-- macOS Help Accordion -->
+            <div class="voice-help-accordion">
+                <div id="accordion-toggle-help" class="voice-help-toggle">
+                    <span>💡 Comment installer une voix de haute qualité ?</span>
+                    <span id="accordion-help-icon">▼</span>
+                </div>
+                <div id="accordion-content-help" class="voice-help-content">
+                    Pour obtenir une voix très naturelle et chaleureuse sans connexion internet :
+                    <ol>
+                        <li>Ouvrez les <b>Réglages Système</b> de votre Mac.</li>
+                        <li>Allez dans <b>Accessibilité</b> puis <b>Contenu énoncé</b>.</li>
+                        <li>Cliquez sur le menu déroulant <b>Voix système</b> et choisissez <b>Gérer les voix...</b></li>
+                        <li>Dans la section <b>Français</b>, cochez et téléchargez une voix améliorée (ex: <b>Siri</b> ou <b>Aurélie (Améliorée)</b>).</li>
+                        <li>Une fois installée sur votre Mac, elle apparaîtra automatiquement dans la liste ci-dessus !</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Save and Close button -->
+            <div style="display: flex; justify-content: center; margin-top: 24px;">
+                <button id="btn-settings-close" class="btn-modal-action btn-modal-next" style="width: 100%; border-radius: 20px; padding: 14px 0; font-weight: 900; background: linear-gradient(135deg, #fbbf24, #f59e0b); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                    SAUVEGARDER ET FERMER
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Daily Quest Modal Overlay -->
     <div id="daily-quest-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 440px;">
@@ -3425,46 +3563,101 @@
                 gain.connect(this.ctx.destination);
                 const now = this.ctx.currentTime;
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, now);
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + duration);
-                osc.start(now);
-                osc.stop(now + duration);
-            }
-        };
-
-        // TEXT TO SPEECH MODULE
+                osc.fr        // TEXT TO SPEECH MODULE
         const Speech = {
             enabled: true,
+            source: 'google_tts', // 'google_tts' or 'web_speech'
+            localVoiceName: '',   // Selected local voice name
+            rate: 0.90,           // Speed rate
+            currentAudio: null,   // Active Audio element for Google TTS
+
+            initSettings() {
+                // Load from localStorage if present
+                const src = localStorage.getItem('jules_voice_source');
+                if (src) this.source = src;
+                
+                const localName = localStorage.getItem('jules_voice_local_name');
+                if (localName) this.localVoiceName = localName;
+                
+                const rt = localStorage.getItem('jules_voice_rate');
+                if (rt) this.rate = parseFloat(rt);
+            },
+
+            saveSettings() {
+                localStorage.setItem('jules_voice_source', this.source);
+                localStorage.setItem('jules_voice_local_name', this.localVoiceName);
+                localStorage.setItem('jules_voice_rate', this.rate.toString());
+            },
+
             stop() {
-                if (!window.speechSynthesis) return;
-                try {
-                    window.speechSynthesis.cancel();
-                } catch (e) {
-                    console.error("Speech.stop error:", e);
+                // Cancel local speech synthesis
+                if (window.speechSynthesis) {
+                    try {
+                        window.speechSynthesis.cancel();
+                    } catch (e) {
+                        console.error("Speech.stop speechSynthesis error:", e);
+                    }
+                }
+                // Pause and clear online Google TTS audio
+                if (this.currentAudio) {
+                    try {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    } catch (e) {
+                        console.error("Speech.stop audio error:", e);
+                    }
                 }
             },
+
             speak(text) {
-                if (!this.enabled || !window.speechSynthesis) return;
+                if (!this.enabled) return;
                 
-                // Cancel current speech safely to prevent queue block-ups
-                try {
-                    if (window.speechSynthesis.speaking) {
-                        window.speechSynthesis.cancel();
-                    }
-                } catch (e) {
-                    console.error("speechSynthesis.cancel error:", e);
-                }
+                // Cancel current speech safely to prevent overlap
+                this.stop();
                 
-                // Convert text to uppercase for both visual display and TTS
+                // Convert text to uppercase for visual display
                 const upperText = text ? text.toUpperCase() : '';
-                
                 const label = document.getElementById('game-instruction-text-label');
                 if (label && upperText) {
                     label.innerText = upperText;
                 }
                 
-                // Wrap in a setTimeout to bypass Chrome's immediate speak-after-cancel bug
+                if (!text) return;
+
+                if (this.source === 'google_tts') {
+                    this.speakGoogle(text);
+                } else {
+                    this.speakLocal(text);
+                }
+            },
+
+            speakGoogle(text) {
+                // Wrap in a small timeout to let any browser cancel operations resolve
+                setTimeout(() => {
+                    try {
+                        const url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=fr-FR&client=tw-ob&q=" + encodeURIComponent(text);
+                        const audio = new Audio(url);
+                        
+                        // Apply custom speed rate (playbackRate works nicely in Chrome/Safari)
+                        audio.playbackRate = this.rate;
+                        
+                        this.currentAudio = audio;
+                        
+                        audio.play().catch(err => {
+                            console.error("Google TTS failed, falling back to local speech:", err);
+                            // Fallback to local speech if blocked or offline
+                            this.speakLocal(text);
+                        });
+                    } catch (err) {
+                        console.error("Google TTS execution error, falling back:", err);
+                        this.speakLocal(text);
+                    }
+                }, 80);
+            },
+
+            speakLocal(text) {
+                if (!window.speechSynthesis) return;
+
                 setTimeout(() => {
                     try {
                         if (window.speechSynthesis.paused) {
@@ -3473,40 +3666,40 @@
                         
                         const u = new SpeechSynthesisUtterance(text);
                         u.lang = 'fr-FR';
-                        u.rate = 0.90; // Slightly slower for better clarity for 5yo
+                        u.rate = this.rate;
                         
                         const voices = window.speechSynthesis.getVoices();
                         if (voices.length > 0) {
                             const frVoices = voices.filter(v => v.lang.toLowerCase().startsWith('fr'));
                             if (frVoices.length > 0) {
-                                // Score French voices to find the most natural/human one
-                                const scored = frVoices.map(v => {
-                                    const name = v.name.toLowerCase();
-                                    const lang = v.lang.toLowerCase();
-                                    let score = 0;
-
-                                    // Siri voice (very natural)
-                                    if (name.includes('siri')) score += 100;
-                                    // High-quality premium/enhanced
-                                    if (name.includes('premium') || name.includes('enhanced') || name.includes('améliorée') || name.includes('ameliorée') || name.includes('haute qualité')) score += 80;
-                                    // Google neural/cloud voices (highly natural)
-                                    if (name.includes('google')) score += 70;
-                                    // Standard natural voice names (Eddy/Flo are macOS/iOS neural voices)
-                                    if (name.includes('eddy') || name.includes('flo') || name.includes('thomas') || name.includes('aurélie') || name.includes('aurelie') || name.includes('audrey') || name.includes('nicolas') || name.includes('amelie') || name.includes('amélie')) {
-                                        score += 50;
-                                    }
-                                    // Prefer European French for standard pronunciation preference
-                                    if (lang === 'fr-fr') score += 20;
-                                    // Demote compact or legacy voice variants
-                                    if (name.includes('compact') || name.includes('robotic')) score -= 40;
-
-                                    return { voice: v, score: score };
-                                });
-
-                                // Sort by score descending and select the best
-                                scored.sort((a, b) => b.score - a.score);
-                                u.voice = scored[0].voice;
-                                console.log("Selected voice for Jules:", u.voice.name, "lang:", u.voice.lang);
+                                // Try to find the user-selected local voice
+                                let selectedVoice = null;
+                                if (this.localVoiceName) {
+                                    selectedVoice = frVoices.find(v => v.name === this.localVoiceName);
+                                }
+                                
+                                // Fallback to scoring voices if not selected or not found
+                                if (!selectedVoice) {
+                                    const scored = frVoices.map(v => {
+                                        const name = v.name.toLowerCase();
+                                        const lang = v.lang.toLowerCase();
+                                        let score = 0;
+                                        if (name.includes('siri')) score += 100;
+                                        if (name.includes('premium') || name.includes('enhanced') || name.includes('améliorée') || name.includes('ameliorée') || name.includes('haute qualité')) score += 80;
+                                        if (name.includes('google')) score += 70;
+                                        if (name.includes('eddy') || name.includes('flo') || name.includes('thomas') || name.includes('aurélie') || name.includes('aurelie') || name.includes('audrey') || name.includes('nicolas') || name.includes('amelie') || name.includes('amélie')) {
+                                            score += 50;
+                                        }
+                                        if (lang === 'fr-fr') score += 20;
+                                        if (name.includes('compact') || name.includes('robotic')) score -= 40;
+                                        return { voice: v, score: score };
+                                    });
+                                    scored.sort((a, b) => b.score - a.score);
+                                    selectedVoice = scored[0].voice;
+                                }
+                                
+                                u.voice = selectedVoice;
+                                console.log("Selected local voice:", u.voice.name, "lang:", u.voice.lang);
                             }
                         }
                         
@@ -3516,11 +3709,14 @@
                         
                         window.speechSynthesis.speak(u);
                     } catch (err) {
-                        console.error("Speech.speak execution error:", err);
+                        console.error("Speech.speakLocal execution error:", err);
                     }
                 }, 80);
             }
         };
+
+        // Initialize Speech settings
+        Speech.initSettings();
 
         // Bypass Chrome/Safari autoplay audio blocks on first user interaction
         const resumeAudioContexts = () => {
@@ -3870,6 +4066,83 @@
                         soundBtn.title = "Son Muet";
                     }
                 });
+
+                // Settings button listener
+                const settingsBtn = document.getElementById('btn-settings-global');
+                if (settingsBtn) {
+                    settingsBtn.addEventListener('click', () => {
+                        this.openSettingsModal();
+                    });
+                }
+                
+                // Voice Settings Event Listeners
+                const srcRadios = document.querySelectorAll('input[name="voice-source"]');
+                srcRadios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        const localBlock = document.getElementById('local-voice-settings-block');
+                        if (localBlock) {
+                            localBlock.style.display = (e.target.value === 'web_speech') ? 'block' : 'none';
+                        }
+                    });
+                });
+
+                const sliderRate = document.getElementById('slider-voice-rate');
+                const labelRate = document.getElementById('label-voice-rate');
+                if (sliderRate && labelRate) {
+                    sliderRate.addEventListener('input', (e) => {
+                        labelRate.innerText = parseFloat(e.target.value).toFixed(2) + 'x';
+                    });
+                }
+
+                const btnTest = document.getElementById('btn-test-voice');
+                if (btnTest) {
+                    btnTest.addEventListener('click', () => {
+                        const selectVoice = document.getElementById('select-local-voice');
+                        if (selectVoice && window.speechSynthesis) {
+                            // Stop any playing sound
+                            Speech.stop();
+                            
+                            const text = "Bonjour Jules, comment vas-tu aujourd'hui ?";
+                            const u = new SpeechSynthesisUtterance(text);
+                            u.lang = 'fr-FR';
+                            
+                            // Temporarily read current slider rate
+                            const tempSlider = document.getElementById('slider-voice-rate');
+                            if (tempSlider) u.rate = parseFloat(tempSlider.value);
+                            
+                            const voices = window.speechSynthesis.getVoices();
+                            const selectedVoice = voices.find(v => v.name === selectVoice.value);
+                            if (selectedVoice) u.voice = selectedVoice;
+                            
+                            window.speechSynthesis.speak(u);
+                        }
+                    });
+                }
+
+                const toggleHelp = document.getElementById('accordion-toggle-help');
+                const contentHelp = document.getElementById('accordion-content-help');
+                const iconHelp = document.getElementById('accordion-help-icon');
+                if (toggleHelp && contentHelp && iconHelp) {
+                    toggleHelp.addEventListener('click', () => {
+                        const isHidden = (contentHelp.style.display === 'none' || contentHelp.style.display === '');
+                        contentHelp.style.display = isHidden ? 'block' : 'none';
+                        iconHelp.innerText = isHidden ? '▲' : '▼';
+                    });
+                }
+
+                const btnClose = document.getElementById('btn-settings-close');
+                if (btnClose) {
+                    btnClose.addEventListener('click', () => {
+                        this.closeSettingsModal();
+                    });
+                }
+
+                // Global voiceschanged listener to keep options updated
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        this.updateVoicesDropdown();
+                    };
+                }
             },
 
             loadProgress() {
@@ -4609,6 +4882,100 @@
                     "Génial Jules ! Quelle réussite !"
                 ];
                 Speech.speak(phrases[Math.floor(Math.random() * phrases.length)]);
+            },
+
+            openSettingsModal() {
+                // Populate modal values from Speech object
+                const modal = document.getElementById('settings-modal');
+                if (!modal) return;
+                
+                // Set voice source
+                const srcRadios = modal.querySelectorAll('input[name="voice-source"]');
+                srcRadios.forEach(r => {
+                    r.checked = (r.value === Speech.source);
+                });
+                
+                // Toggle local voice block visibility
+                const localBlock = document.getElementById('local-voice-settings-block');
+                if (localBlock) {
+                    localBlock.style.display = (Speech.source === 'web_speech') ? 'block' : 'none';
+                }
+                
+                // Populate voice select
+                this.updateVoicesDropdown();
+                
+                // Set speech rate slider & label
+                const slider = document.getElementById('slider-voice-rate');
+                const label = document.getElementById('label-voice-rate');
+                if (slider && label) {
+                    slider.value = Speech.rate;
+                    label.innerText = Speech.rate.toFixed(2) + 'x';
+                }
+                
+                modal.classList.add('active');
+            },
+
+            closeSettingsModal() {
+                const modal = document.getElementById('settings-modal');
+                if (!modal) return;
+                
+                // Read voice source
+                const activeSrc = modal.querySelector('input[name="voice-source"]:checked');
+                if (activeSrc) {
+                    Speech.source = activeSrc.value;
+                }
+                
+                // Read local voice name
+                const selectVoice = document.getElementById('select-local-voice');
+                if (selectVoice) {
+                    Speech.localVoiceName = selectVoice.value;
+                }
+                
+                // Read speed rate
+                const slider = document.getElementById('slider-voice-rate');
+                if (slider) {
+                    Speech.rate = parseFloat(slider.value);
+                }
+                
+                // Save settings to localStorage
+                Speech.saveSettings();
+                
+                modal.classList.remove('active');
+                
+                // Say a confirmation
+                AudioSynth.playClick();
+                Speech.speak("Les réglages de la voix ont été enregistrés.");
+            },
+
+            updateVoicesDropdown() {
+                const select = document.getElementById('select-local-voice');
+                if (!select || !window.speechSynthesis) return;
+                
+                select.innerHTML = '';
+                const voices = window.speechSynthesis.getVoices();
+                const frVoices = voices.filter(v => v.lang.toLowerCase().startsWith('fr'));
+                
+                if (frVoices.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.innerText = 'Aucune voix française détectée';
+                    select.appendChild(opt);
+                    return;
+                }
+                
+                frVoices.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name;
+                    // Format voice name nicely
+                    let label = v.name;
+                    if (v.name.toLowerCase().includes('siri')) label += ' (Siri 🌟)';
+                    else if (v.name.toLowerCase().includes('enhanced') || v.name.toLowerCase().includes('améliorée')) label += ' (Haute Qualité ✨)';
+                    else if (v.name.toLowerCase().includes('google')) label += ' (Google Chrome 🌐)';
+                    
+                    opt.innerText = label;
+                    opt.selected = (v.name === Speech.localVoiceName);
+                    select.appendChild(opt);
+                });
             },
 
             openAvatarModal() {
