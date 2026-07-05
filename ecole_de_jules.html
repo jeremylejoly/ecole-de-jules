@@ -3771,9 +3771,30 @@
 
         // Bypass Chrome/Safari autoplay audio blocks on first user interaction
         const resumeAudioContexts = () => {
+            // 1. Unlock AudioContext (Web Audio API)
             AudioSynth.init();
-            if (window.speechSynthesis && window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
+            
+            // 2. Unlock Web Speech API (iOS Safari hack: speak a silent utterance)
+            if (window.speechSynthesis) {
+                try {
+                    if (window.speechSynthesis.paused) {
+                        window.speechSynthesis.resume();
+                    }
+                    const u = new SpeechSynthesisUtterance("");
+                    u.lang = 'fr-FR';
+                    window.speechSynthesis.speak(u);
+                } catch(e) {
+                    console.error("SpeechSynthesis unlock error:", e);
+                }
+            }
+
+            // 3. Unlock HTML5 Audio (iOS Safari hack: play a tiny 1-sample base64 silent WAV)
+            try {
+                const audio = new Audio();
+                audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAD';
+                audio.play().catch(e => console.log("HTML5 Audio unlock warning:", e));
+            } catch(e) {
+                console.error("HTML5 Audio unlock error:", e);
             }
         };
         document.addEventListener('click', resumeAudioContexts, { once: true });
