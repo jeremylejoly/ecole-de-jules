@@ -8684,6 +8684,7 @@
                         btnCalib.style.background = '#fbbf24';
                         btnCalib.style.color = '#0f172a';
                         btnCalib.textContent = '🛠️ CALIBRER';
+                        this.drawOverlays();
                     }
                 });
                 
@@ -8714,6 +8715,7 @@
                     document.getElementById('spot-calib-slider-size').value = diff.size;
                     document.getElementById('spot-calib-val-size').textContent = `${diff.size}%`;
 
+                    this.drawOverlays();
                     this.updateCalibrationJSON();
                 };
 
@@ -8769,6 +8771,11 @@
                 }
             }
             
+            isCalibrating() {
+                const panel = document.getElementById('spot-calibration-panel');
+                return panel && panel.style.display !== 'none';
+            }
+            
             drawOverlays() {
                 const containerLeft = document.getElementById('spot-overlays-left');
                 const containerRight = document.getElementById('spot-overlays-right');
@@ -8776,6 +8783,10 @@
                 
                 containerLeft.innerHTML = '';
                 containerRight.innerHTML = '';
+                
+                const isCalibrating = this.isCalibrating();
+                const selector = document.getElementById('spot-calib-selector');
+                const activeCalibId = (isCalibrating && selector) ? parseInt(selector.value) : null;
                 
                 this.selectedScene.differences.forEach(diff => {
                     // Create Left Clickable zone & element
@@ -8792,8 +8803,16 @@
                     elLeft.style.fontSize = `${diff.size * 2.8}px`; // dynamic font size proportional to parent
                     elLeft.style.lineHeight = '1';
                     
-                    // Display original content if not found, or show circled found content
+                    // Display original content
                     elLeft.innerText = diff.left;
+                    
+                    // Highlight currently active calibrated item
+                    if (isCalibrating && diff.id === activeCalibId) {
+                        elLeft.style.outline = '3px dashed #fbbf24';
+                        elLeft.style.outlineOffset = '2.5px';
+                        elLeft.style.borderRadius = '8px';
+                        elLeft.style.zIndex = '50';
+                    }
                     
                     // Create Right Clickable zone & element
                     const elRight = document.createElement('div');
@@ -8811,8 +8830,10 @@
                     
                     elRight.innerText = diff.right;
                     
-                    // Add validation circle if found
-                    if (diff.isFound) {
+                    if (isCalibrating) {
+                        // In calibration mode, do not bind validation clicks and do not show red circles
+                    } else if (diff.isFound) {
+                        // Add validation circle if found
                         const circleLeft = this.createRedCircle();
                         elLeft.appendChild(circleLeft);
                         const circleRight = this.createRedCircle();
@@ -8852,6 +8873,7 @@
             }
             
             foundDifference(diff) {
+                if (this.isCalibrating()) return;
                 diff.isFound = true;
                 this.foundCount++;
                 
