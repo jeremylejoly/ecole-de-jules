@@ -10038,20 +10038,30 @@
                 
                 this.instruction = "RETROUVE LA BONNE SILHOUETTE !";
 
-                // Groups of similar shapes/themes to force observation
+                // Groups of similar shapes/themes to force observation (confusable silhouettes)
                 this.groups = [
-                    // Family 1: Animals with legs (observe tails, ears, shapes)
-                    ['🦖', '🦁', '🐱', '🐶', '🐰', '🐷', '🐏', '🐴', '🦊', '🐻', '🐼', '🦒'],
-                    // Family 2: Flying things / Birds (wings, shapes)
-                    ['🦅', '🦆', '🦉', '🦇', '🦋', '🐝', '🕊️', '🛸'],
-                    // Family 3: Round fruits / Vegetables
-                    ['🍎', '🍊', '🍋', '🍅', '🍑', '🍒', '🍈', '🍓', '🧅', '🎃'],
-                    // Family 4: Vehicles / Transport
-                    ['🚗', '🚌', '🚒', '🚜', '🚂', '✈️', '🚁', '⛵', '🚀', '🚲', '🛶'],
-                    // Family 5: Sea Creatures
-                    ['🐟', '🐙', '🦀', '🦈', '🐬', '🐳', '🦐', '🐢'],
-                    // Family 6: Plants / Trees / Flowers
-                    ['🌲', '🌳', '🌴', '🌵', '🍄', '🌻', '🌷', '🍁']
+                    // Family 1: Side-profile quadrupeds (observe horns, neck, shape)
+                    ['🐴', '🦄', '🦓', '🦒', '🐐', '🐏', '🦌', '🐪'],
+                    // Family 2: Round front-facing animal faces (observe ears, snout, whiskers)
+                    ['🐱', '🐶', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐷', '🐰', '🐵'],
+                    // Family 3: Dinos & Reptiles (long tails/necks)
+                    ['🦖', '🦕', '🐊', '🦎'],
+                    // Family 4: Birds & Winged silhouettes (observe wings, beak)
+                    ['🦅', '🕊️', '🦉', '🦜', '🐓', '🦆', '🐧', '🦇'],
+                    // Family 5: Road Vehicles (wheels, cargo, hoods)
+                    ['🚗', '🚕', '🚓', '🏎️', '🚐', '🚚', '🚒', '🚜'],
+                    // Family 6: Flying / Space crafts
+                    ['✈️', '🚀', '🛸', '🚁'],
+                    // Family 7: Fishes (profile, fins)
+                    ['🐟', '🐠', '🐡', '🦈', '🐬', '🐳', '🐋'],
+                    // Family 8: Crustaceans & Mollusks (legs, claws, tentacles)
+                    ['🐙', '🦑', '🦞', '🦀', '🦐'],
+                    // Family 9: Insects (wings, antennae, legs)
+                    ['🦋', '🐝', '🐞', '🦗', '🕷️', '🦂'],
+                    // Family 10: Round Fruits (stems, leaves, shapes)
+                    ['🍎', '🍏', '🍊', '🍅', '🍑', '🍈', '🍋', '🍒'],
+                    // Family 11: Plants & Trees (leaves, branches)
+                    ['🌲', '🌳', '🌴', '🌵', '🌻', '🌷', '🍁']
                 ];
 
                 // Flatten all groups to make the global pool
