@@ -10316,17 +10316,34 @@
                 return Math.random() < 0.5 ? { v1: target, v2: other } : { v1: other, v2: target };
             }
             replaceCandidate(idx) {
-                const remainingSolvable = this.candidates.some((c, i) => {
+                const nextLeftIdx = this.leftIdx - 1;
+                const nextRightIdx = this.rightIdx + 1;
+                const showLeftSlot = nextLeftIdx >= -3;
+                const showRightSlot = nextRightIdx <= 3;
+                
+                const L_val = this.chain[0].v1;
+                const R_val = this.chain[this.chain.length - 1].v2;
+
+                // Check if any of the other 3 candidates are compatible with an active slot
+                const hasSolvable = this.candidates.some((c, i) => {
                     if (i === idx) return false;
-                    const L_val = this.chain[0].v1;
-                    const R_val = this.chain[this.chain.length - 1].v2;
-                    return c.v1 === L_val || c.v2 === L_val || c.v1 === R_val || c.v2 === R_val;
+                    
+                    const matchesLeft = showLeftSlot && (c.v1 === L_val || c.v2 === L_val);
+                    const matchesRight = showRightSlot && (c.v1 === R_val || c.v2 === R_val);
+                    
+                    return matchesLeft || matchesRight;
                 });
 
-                if (remainingSolvable) {
+                if (hasSolvable) {
+                    // We already have a valid move in the other 3 cards, so this one can be random
                     this.candidates[idx] = { v1: Math.floor(Math.random() * 7), v2: Math.floor(Math.random() * 7) };
                 } else {
-                    const side = Math.random() < 0.5 ? 'left' : 'right';
+                    // No valid moves left! We MUST generate a compatible card for this slot
+                    const possibleSides = [];
+                    if (showLeftSlot) possibleSides.push('left');
+                    if (showRightSlot) possibleSides.push('right');
+                    
+                    const side = possibleSides[Math.floor(Math.random() * possibleSides.length)] || 'right';
                     this.candidates[idx] = this.generateCompatibleCandidate(side);
                 }
             }
