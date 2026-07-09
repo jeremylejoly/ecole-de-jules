@@ -967,6 +967,10 @@
         .g5-choice-card .choice-emoji {
             font-size: 3rem;
             margin-bottom: 6px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .g5-choice-card .choice-word {
@@ -5702,13 +5706,83 @@
                 this.parent = parentApp;
                 this.round = 1;
                 this.instruction = "TROUVE LE SON !";
-                this.questions = {
-                    1: { letter: "A", soundName: "A", hint: 'TROUVE LE SON "A" !', choices: [{ src: "sound_avion.png", word: "Avion", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    2: { letter: "O", soundName: "O", hint: 'TROUVE LE SON "O" !', choices: [{ src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: true }] },
-                    3: { letter: "I", soundName: "I", hint: 'TROUVE LE SON "I" !', choices: [{ src: "sound_ile.png", word: "Île", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    4: { letter: "R", soundName: "R", hint: 'TROUVE LE SON "R" !', choices: [{ src: "sound_robot.png", word: "Robot", isCorrect: true }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    5: { letter: "M", soundName: "M", hint: 'TROUVE LE SON "M" !', choices: [{ src: "sound_mouton.png", word: "Mouton", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }] }
+                
+                // Bank of words for each sound
+                this.soundBank = {
+                    "A": [
+                        { word: "Avion", src: "sound_avion.png" },
+                        { word: "Ananas", emoji: "🍍" },
+                        { word: "Abeille", emoji: "🐝" },
+                        { word: "Araignée", emoji: "🕷️" },
+                        { word: "Arbre", emoji: "🌳" }
+                    ],
+                    "O": [
+                        { word: "Ours", src: "sound_ours.png" },
+                        { word: "Orange", emoji: "🍊" },
+                        { word: "Oiseau", emoji: "🐦" },
+                        { word: "Oreille", emoji: "👂" },
+                        { word: "Ordinateur", emoji: "💻" }
+                    ],
+                    "I": [
+                        { word: "Île", src: "sound_ile.png" },
+                        { word: "Iguane", emoji: "🦎" },
+                        { word: "Igloo", emoji: "🛖" },
+                        { word: "Insecte", emoji: "🐛" }
+                    ],
+                    "R": [
+                        { word: "Robot", src: "sound_robot.png" },
+                        { word: "Rose", emoji: "🌹" },
+                        { word: "Renard", emoji: "🦊" },
+                        { word: "Raisin", emoji: "🍇" },
+                        { word: "Rhinocéros", emoji: "🦏" }
+                    ],
+                    "M": [
+                        { word: "Mouton", src: "sound_mouton.png" },
+                        { word: "Maison", emoji: "🏠" },
+                        { word: "Maman", emoji: "👩" },
+                        { word: "Main", emoji: "🖐️" },
+                        { word: "Miel", emoji: "🍯" }
+                    ]
                 };
+
+                this.generateQuestions();
+            }
+            generateQuestions() {
+                this.questions = {};
+                
+                // Shuffled target sounds to randomize the order of rounds
+                const targets = ["A", "O", "I", "R", "M"].sort(() => Math.random() - 0.5);
+                
+                targets.forEach((letter, index) => {
+                    const roundNum = index + 1;
+                    
+                    // Pick a random correct item for the target sound
+                    const correctItems = this.soundBank[letter];
+                    const correctItem = correctItems[Math.floor(Math.random() * correctItems.length)];
+                    
+                    const choices = [
+                        { ...correctItem, isCorrect: true }
+                    ];
+                    
+                    // Pick 3 incorrect items from other sounds
+                    const otherLetters = Object.keys(this.soundBank).filter(l => l !== letter);
+                    
+                    // Shuffle other letters to select from different sounds
+                    const selectedOthers = otherLetters.sort(() => Math.random() - 0.5).slice(0, 3);
+                    
+                    selectedOthers.forEach(otherLetter => {
+                        const items = this.soundBank[otherLetter];
+                        const item = items[Math.floor(Math.random() * items.length)];
+                        choices.push({ ...item, isCorrect: false });
+                    });
+                    
+                    this.questions[roundNum] = {
+                        letter: letter,
+                        soundName: letter,
+                        hint: `TROUVE LE SON "${letter}" !`,
+                        choices: choices
+                    };
+                });
             }
             start() {
                 this.container.innerHTML = `
@@ -5738,8 +5812,13 @@
                 choices.forEach(ch => {
                     const card = document.createElement('div');
                     card.className = 'g5-choice-card';
+                    
+                    const displayHTML = ch.src 
+                        ? `<img src="images/${ch.src}">` 
+                        : ch.emoji;
+                        
                     card.innerHTML = `
-                        <div class="choice-emoji"><img src="images/${ch.src}"></div>
+                        <div class="choice-emoji">${displayHTML}</div>
                         <div class="choice-word">${ch.word}</div>
                     `;
                     card.addEventListener('click', () => this.handleSelect(ch, card));
