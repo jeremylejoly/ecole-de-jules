@@ -5667,11 +5667,11 @@
                 this.round = 1;
                 this.instruction = "TROUVE LE SON !";
                 this.questions = {
-                    1: { letter: "A", soundName: "A", hint: "TROUVE LE SON A !", choices: [{ src: "sound_avion.png", word: "Avion", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    2: { letter: "O", soundName: "O", hint: "TROUVE LE SON O !", choices: [{ src: "sound_ours.png", word: "Ours", isCorrect: true }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }] },
-                    3: { letter: "I", soundName: "I", hint: "TROUVE LE SON I !", choices: [{ src: "sound_ile.png", word: "Île", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    4: { letter: "R", soundName: "R", hint: "TROUVE LE SON R !", choices: [{ src: "sound_robot.png", word: "Robot", isCorrect: true }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
-                    5: { letter: "M", soundName: "M", hint: "TROUVE LE SON M !", choices: [{ src: "sound_mouton.png", word: "Mouton", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }] }
+                    1: { letter: "A", soundName: "A", hint: 'TROUVE LE SON "A" !', choices: [{ src: "sound_avion.png", word: "Avion", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
+                    2: { letter: "O", soundName: "O", hint: 'TROUVE LE SON "O" !', choices: [{ src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: true }] },
+                    3: { letter: "I", soundName: "I", hint: 'TROUVE LE SON "I" !', choices: [{ src: "sound_ile.png", word: "Île", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
+                    4: { letter: "R", soundName: "R", hint: 'TROUVE LE SON "R" !', choices: [{ src: "sound_robot.png", word: "Robot", isCorrect: true }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_avion.png", word: "Avion", isCorrect: false }, { src: "sound_mouton.png", word: "Mouton", isCorrect: false }] },
+                    5: { letter: "M", soundName: "M", hint: 'TROUVE LE SON "M" !', choices: [{ src: "sound_mouton.png", word: "Mouton", isCorrect: true }, { src: "sound_ours.png", word: "Ours", isCorrect: false }, { src: "sound_ile.png", word: "Île", isCorrect: false }, { src: "sound_robot.png", word: "Robot", isCorrect: false }] }
                 };
             }
             start() {
@@ -5683,7 +5683,9 @@
             }
             speakInstruction() {
                 const q = this.questions[this.round];
-                Speech.speak(q.hint);
+                // Insert a comma pause to prevent French liaison like "son na" for "son A"
+                const speakText = q.hint.replace('LE SON ', 'le son, ');
+                Speech.speak(speakText);
             }
             nextRound() {
                 this.locked = false;
