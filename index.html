@@ -4777,7 +4777,7 @@
                 } else if (gameId === 'balance_scale') {
                     gameDetails = { id: 'balance_scale', title: 'LA BALANCE' };
                 } else if (gameId === 'word_start_sound') {
-                    gameDetails = { id: 'word_start_sound', title: "LE PREMIER SON" };
+                    gameDetails = { id: 'word_start_sound', title: "L'IMAGE ET LE MOT" };
                 } else if (gameId === 'shadow_match') {
                     gameDetails = { id: 'shadow_match', title: "L'OMBRE MYSTÈRE" };
                 } else if (gameId === 'dominoes') {
@@ -9841,36 +9841,40 @@
             destroy() {}
         };
 
-        // ----------------- GAME 21: PHONO – Quel son commence ce mot ? -----------------
+        // ----------------- GAME 21: PHONO – Quel mot correspond à l'image ? -----------------
         GAME_ENGINES['word_start_sound'] = class {
             constructor(container, parentApp) {
                 this.container = container;
                 this.parent = parentApp;
                 this.round = 0;
-                this.maxRounds = 6;
+                this.maxRounds = 5;
                 this.isDone = false;
                 this.answered = false;
                 
-                this.instruction = "TROUVE LA PREMIÈRE LETTRE !";
+                this.instruction = "TROUVE LE MOT CORRESPONDANT !";
 
-                // Word start list
+                // 20 simple words and emojis (easy to read, easy to recognize)
                 this.pool = [
-                    { emoji: '🐱', word: 'CHAT', letter: 'C', wrong: ['M', 'B'] },
-                    { emoji: '🍌', word: 'BANANE', letter: 'B', wrong: ['P', 'T'] },
-                    { emoji: '☀️', word: 'SOLEIL', letter: 'S', wrong: ['L', 'M'] },
-                    { emoji: '🌸', word: 'FLEUR', letter: 'F', wrong: ['V', 'R'] },
-                    { emoji: '🚂', word: 'TRAIN', letter: 'T', wrong: ['D', 'N'] },
-                    { emoji: '🦁', word: 'LION', letter: 'L', wrong: ['S', 'C'] },
-                    { emoji: '🏠', word: 'MAISON', letter: 'M', wrong: ['N', 'L'] },
-                    { emoji: '🚗', word: 'VOITURE', letter: 'V', wrong: ['F', 'P'] },
-                    { emoji: '🐰', word: 'LAPIN', letter: 'L', wrong: ['B', 'R'] },
-                    { emoji: '🍎', word: 'POMME', letter: 'P', wrong: ['T', 'M'] },
-                    { emoji: '🐸', word: 'GRENOUILLE', letter: 'G', wrong: ['C', 'F'] },
-                    { emoji: '⛵', word: 'BATEAU', letter: 'B', wrong: ['V', 'D'] },
-                    { emoji: '🦖', word: 'DINO', letter: 'D', wrong: ['T', 'G'] },
-                    { emoji: '🍍', word: 'ANANAS', letter: 'A', wrong: ['O', 'I'] },
-                    { emoji: '🦊', word: 'RENARD', letter: 'R', wrong: ['F', 'L'] },
-                    { emoji: '🕊️', word: 'OISEAU', letter: 'O', wrong: ['A', 'E'] }
+                    { emoji: '🍎', word: 'POMME', wrong: ['BANANE', 'TOMATE'] },
+                    { emoji: '🌳', word: 'ARBRE', wrong: ['ROSE', 'SALADE'] },
+                    { emoji: '👵', word: 'MAMY', wrong: ['MAMAN', 'PAPA'] },
+                    { emoji: '👩', word: 'MAMAN', wrong: ['MAMY', 'PAPA'] },
+                    { emoji: '👨', word: 'PAPA', wrong: ['MAMAN', 'MAMY'] },
+                    { emoji: '🥧', word: 'TARTE', wrong: ['POMME', 'BOL'] },
+                    { emoji: '🌹', word: 'ROSE', wrong: ['ARBRE', 'TASSE'] },
+                    { emoji: '🍌', word: 'BANANE', wrong: ['POMME', 'TOMATE'] },
+                    { emoji: '🍅', word: 'TOMATE', wrong: ['SALADE', 'BANANE'] },
+                    { emoji: '🏍️', word: 'MOTO', wrong: ['VÉLO', 'BUS'] },
+                    { emoji: '🚲', word: 'VÉLO', wrong: ['MOTO', 'BUS'] },
+                    { emoji: '🤖', word: 'ROBOT', wrong: ['MOTO', 'VÉLO'] },
+                    { emoji: '🥗', word: 'SALADE', wrong: ['TOMATE', 'ARBRE'] },
+                    { emoji: '🎒', word: 'SAC', wrong: ['BOL', 'LIT'] },
+                    { emoji: '🚌', word: 'BUS', wrong: ['VÉLO', 'MOTO'] },
+                    { emoji: '🛏️', word: 'LIT', wrong: ['PORTE', 'SAC'] },
+                    { emoji: '🚪', word: 'PORTE', wrong: ['LIT', 'ARBRE'] },
+                    { emoji: '🌙', word: 'LUNE', wrong: ['BUS', 'ROBOT'] },
+                    { emoji: '🥣', word: 'BOL', wrong: ['TASSE', 'SAC'] },
+                    { emoji: '☕', word: 'TASSE', wrong: ['BOL', 'TARTE'] }
                 ];
                 
                 this.usedIndexes = [];
@@ -9882,11 +9886,7 @@
                 this.nextRound();
             }
             speakInstruction() {
-                if (this.currentItem) {
-                    Speech.speak("Trouve la première lettre du mot : " + this.currentItem.word);
-                } else {
-                    Speech.speak(this.instruction);
-                }
+                Speech.speak("Trouve le mot qui correspond à l'image.");
             }
             nextRound() {
                 this.round++;
@@ -9905,7 +9905,7 @@
                 this.currentItem = currentItem;
 
                 // Shuffle choices (correct + 2 wrongs)
-                const choices = [currentItem.letter, ...currentItem.wrong].sort(() => Math.random() - 0.5);
+                const choices = [currentItem.word, ...currentItem.wrong].sort(() => Math.random() - 0.5);
 
                 this.renderGame(currentItem, choices);
                 this.speakInstruction();
@@ -9919,13 +9919,12 @@
 
                         <!-- Instruction -->
                         <div style="font-size:1.1rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.05em; text-align:center;">
-                            Par quelle lettre commence ce mot ?
+                            Trouve le mot qui correspond à l'image !
                         </div>
 
-                        <!-- Main card with Emoji and Word -->
-                        <div style="background:rgba(30,41,59,0.7); border:3px solid rgba(255,255,255,0.12); border-radius:32px; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 20px; box-shadow:0 10px 25px rgba(0,0,0,0.4);">
-                            <div style="font-size:7rem; line-height:1; margin-bottom:12px; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));">${item.emoji}</div>
-                            <div style="font-size:2.8rem; font-weight:900; color:white; letter-spacing:0.1em; font-family:'Outfit', sans-serif;">${item.word}</div>
+                        <!-- Main card with Emoji -->
+                        <div style="background:rgba(30,41,59,0.7); border:3px solid rgba(255,255,255,0.12); border-radius:32px; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 20px; box-shadow:0 10px 25px rgba(0,0,0,0.4);">
+                            <div style="font-size:7.5rem; line-height:1; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));">${item.emoji}</div>
                         </div>
 
                         <!-- Choices 3 buttons row -->
@@ -9935,9 +9934,10 @@
                                     background: rgba(30,41,59,0.9);
                                     border: 3px solid rgba(255,255,255,0.12);
                                     border-radius: 24px;
-                                    font-size: 3.5rem;
+                                    font-size: 1.6rem;
                                     font-weight: 900;
-                                    width: 90px; height: 90px;
+                                    flex: 1;
+                                    height: 80px;
                                     cursor: pointer;
                                     transition: all 0.15s;
                                     box-shadow: 0 6px 15px rgba(0,0,0,0.3);
@@ -9945,6 +9945,9 @@
                                     line-height: 1;
                                     font-family:'Outfit', sans-serif;
                                     color: #f472b6;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 0 10px;
                                 ">${ch}</button>
                             `).join('')}
                         </div>
@@ -9957,7 +9960,7 @@
                 // Bind choices
                 this.container.querySelectorAll('[data-choice]').forEach(btn => {
                     btn.addEventListener('mouseover', () => {
-                        btn.style.transform = 'scale(1.12)';
+                        btn.style.transform = 'scale(1.08)';
                         btn.style.borderColor = '#ec4899';
                     });
                     btn.addEventListener('mouseout', () => {
@@ -9967,7 +9970,7 @@
                     btn.addEventListener('click', () => {
                         if (this.answered || this.isDone) return;
                         AudioSynth.playClick();
-                        this.validate(btn.getAttribute('data-choice'), item.letter, btn);
+                        this.validate(btn.getAttribute('data-choice'), item.word, btn);
                     });
                 });
             }
@@ -9987,11 +9990,11 @@
                     btn.style.background = '#16a34a';
                     btn.style.borderColor = '#22c55e';
                     btn.style.color = 'white';
-                    btn.style.transform = 'scale(1.1)';
+                    btn.style.transform = 'scale(1.05)';
                     
                     if (fb) {
                         fb.style.color = '#22c55e';
-                        fb.textContent = `✅ Bravo ! ${correct} comme ${btn.textContent} !`;
+                        fb.textContent = `✅ Bravo ! C'est le mot ${correct} !`;
                     }
 
                     if (this.round >= this.maxRounds) {
