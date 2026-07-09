@@ -5754,7 +5754,7 @@
 
                 if (ch.isCorrect) {
                     card.classList.add('correct');
-                    AudioSynth.playRoar();
+                    AudioSynth.playCorrect();
                     const q = this.questions[this.round];
                     document.getElementById('g5-text-bubble').innerText = ` Oui ! Dans "${ch.word}" tu entends le son [${q.letter}] !`;
                     
