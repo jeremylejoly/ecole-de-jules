@@ -3372,6 +3372,9 @@
             playError() {
                 if (!this.enabled) return;
                 this.init();
+                if (typeof App !== 'undefined') {
+                    App.hadErrors = true;
+                }
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.connect(gain);
@@ -4372,27 +4375,27 @@
             },
 
             shopItems: [
-                { id: 'cap', label: "Casquette Cool", emoji: "🧢", cost: 3, type: 'wearable' },
-                { id: 'sunglasses', label: "Lunettes Soleil", emoji: "🕶️", cost: 4, type: 'wearable' },
-                { id: 'book', label: "Livre d'Images", emoji: "📚", cost: 3, type: 'toy' },
-                { id: 'ball', label: "Ballon de Foot", emoji: "⚽", cost: 3, type: 'toy' },
-                { id: 'bike', label: "Super Vélo", emoji: "🚲", cost: 8, type: 'toy' },
-                { id: 'toy_dino', label: "Jouet Dino", emoji: "🦖", cost: 5, type: 'toy' },
-                { id: 'crown', label: "Couronne de Roi", emoji: "👑", cost: 6, type: 'wearable' },
-                { id: 'backpack', label: "Sac à Dos", emoji: "🎒", cost: 4, type: 'wearable' },
-                { id: 'magnifier', label: "Loupe Détective", emoji: "🔍", cost: 4, type: 'wearable' },
-                { id: 'wand', label: "Baguette Magique", emoji: "🪄", cost: 5, type: 'wearable' },
-                { id: 'guitar', label: "Guitare Rock", emoji: "🎸", cost: 6, type: 'wearable' },
-                { id: 'magician_hat', label: "Chapeau Magicien", emoji: "🎩", cost: 5, type: 'wearable' },
-                { id: 'headphones', label: "Casque Audio", emoji: "🎧", cost: 5, type: 'wearable' },
-                { id: 'snorkel', label: "Masque & Tuba", emoji: "🤿", cost: 4, type: 'wearable' },
-                { id: 'shield', label: "Bouclier", emoji: "🛡️", cost: 5, type: 'wearable' },
-                { id: 'balloon', label: "Ballon Hélium", emoji: "🎈", cost: 2, type: 'wearable' },
-                { id: 'skateboard', label: "Skate Cool", emoji: "🛹", cost: 6, type: 'toy' },
-                { id: 'teddy', label: "Nounours", emoji: "🧸", cost: 3, type: 'toy' },
-                { id: 'rocket', label: "Fusée Jouet", emoji: "🚀", cost: 5, type: 'toy' },
-                { id: 'puppy', label: "Petit Chiot", emoji: "🐶", cost: 7, type: 'toy' },
-                { id: 'kitten', label: "Petit Chaton", emoji: "🐱", cost: 7, type: 'toy' }
+                { id: 'cap', label: "Casquette Cool", emoji: "🧢", cost: 6, type: 'wearable' },
+                { id: 'sunglasses', label: "Lunettes Soleil", emoji: "🕶️", cost: 8, type: 'wearable' },
+                { id: 'book', label: "Livre d'Images", emoji: "📚", cost: 6, type: 'toy' },
+                { id: 'ball', label: "Ballon de Foot", emoji: "⚽", cost: 6, type: 'toy' },
+                { id: 'bike', label: "Super Vélo", emoji: "🚲", cost: 16, type: 'toy' },
+                { id: 'toy_dino', label: "Jouet Dino", emoji: "🦖", cost: 10, type: 'toy' },
+                { id: 'crown', label: "Couronne de Roi", emoji: "👑", cost: 12, type: 'wearable' },
+                { id: 'backpack', label: "Sac à Dos", emoji: "🎒", cost: 8, type: 'wearable' },
+                { id: 'magnifier', label: "Loupe Détective", emoji: "🔍", cost: 8, type: 'wearable' },
+                { id: 'wand', label: "Baguette Magique", emoji: "🪄", cost: 10, type: 'wearable' },
+                { id: 'guitar', label: "Guitare Rock", emoji: "🎸", cost: 12, type: 'wearable' },
+                { id: 'magician_hat', label: "Chapeau Magicien", emoji: "🎩", cost: 10, type: 'wearable' },
+                { id: 'headphones', label: "Casque Audio", emoji: "🎧", cost: 10, type: 'wearable' },
+                { id: 'snorkel', label: "Masque & Tuba", emoji: "🤿", cost: 8, type: 'wearable' },
+                { id: 'shield', label: "Bouclier", emoji: "🛡️", cost: 10, type: 'wearable' },
+                { id: 'balloon', label: "Ballon Hélium", emoji: "🎈", cost: 4, type: 'wearable' },
+                { id: 'skateboard', label: "Skate Cool", emoji: "🛹", cost: 12, type: 'toy' },
+                { id: 'teddy', label: "Nounours", emoji: "🧸", cost: 6, type: 'toy' },
+                { id: 'rocket', label: "Fusée Jouet", emoji: "🚀", cost: 10, type: 'toy' },
+                { id: 'puppy', label: "Petit Chiot", emoji: "🐶", cost: 14, type: 'toy' },
+                { id: 'kitten', label: "Petit Chaton", emoji: "🐱", cost: 14, type: 'toy' }
             ],
 
             initShop() {
@@ -4772,6 +4775,7 @@
 
             launchGame(gameId) {
                 this.activeGameId = gameId;
+                this.hadErrors = false;
                 
                 // Auto-detect activeWorldId
                 if (gameId === 'dino_spelling') this.activeWorldId = 'dinos';
@@ -4878,8 +4882,9 @@
             },
 
             onGameWin(gameId) {
-                // Add stars (1 per game, unlimited replays)
-                this.stars += 1;
+                // Add stars (2 for perfect, 1 if mistakes were made)
+                const starsEarned = this.hadErrors ? 1 : 2;
+                this.stars += starsEarned;
                 this.saveProgress();
                 this.updateGlobalDisplay();
 
@@ -4888,8 +4893,15 @@
 
                 // Update modal content
                 const modal = document.getElementById('success-modal');
-                modal.querySelector('.modal-stars-row').querySelectorAll('svg').forEach(s => s.classList.add('earned'));
-                document.getElementById('modal-rewards-label-text').innerText = `+1 étoile ! ⭐️`;
+                const svgs = modal.querySelector('.modal-stars-row').querySelectorAll('svg');
+                svgs.forEach((s, idx) => {
+                    if (idx < starsEarned) {
+                        s.classList.add('earned');
+                    } else {
+                        s.classList.remove('earned');
+                    }
+                });
+                document.getElementById('modal-rewards-label-text').innerText = `+${starsEarned} étoile${starsEarned > 1 ? 's' : ''} ! ⭐️`;
                 document.getElementById('modal-total-stars-text').innerText = `Total : ${this.stars} étoiles au compteur`;
                 document.getElementById('btn-modal-exit-to-lobby').innerHTML = `← RETOUR`;
                 document.getElementById('btn-modal-replay-game').innerHTML = `↺ REJOUER`;
@@ -5120,10 +5132,10 @@
                     Speech.speak(`Génial ! Tu as débloqué l'autocollant ${rewardSticker.name} !`);
                 } else {
                     chest.innerHTML = `<img src="images/ui_star.png" style="width: 120px; height: 120px; object-fit: contain;">`;
-                    this.stars += 20;
-                    rewardLabel.innerText = "Tu as déjà tous les autocollants ! Voici 20 étoiles ! ⭐️";
+                    this.stars += 40;
+                    rewardLabel.innerText = "Tu as déjà tous les autocollants ! Voici 40 étoiles ! ⭐️";
                     rewardLabel.style.display = 'block';
-                    Speech.speak("Tu as déjà tous les autocollants ! Voici 20 étoiles !");
+                    Speech.speak("Tu as déjà tous les autocollants ! Voici 40 étoiles !");
                 }
                 
                 this.dailyQuestUnlocked = true;
@@ -5707,80 +5719,164 @@
                 this.round = 1;
                 this.instruction = "TROUVE LE SON !";
                 
-                // Bank of words for each sound
-                this.soundBank = {
-                    "A": [
-                        { word: "Avion", src: "sound_avion.png" },
-                        { word: "Ananas", emoji: "🍍" },
-                        { word: "Abeille", emoji: "🐝" },
-                        { word: "Araignée", emoji: "🕷️" },
-                        { word: "Arbre", emoji: "🌳" }
-                    ],
-                    "O": [
-                        { word: "Ours", src: "sound_ours.png" },
-                        { word: "Orange", emoji: "🍊" },
-                        { word: "Oiseau", emoji: "🐦" },
-                        { word: "Oreille", emoji: "👂" },
-                        { word: "Ordinateur", emoji: "💻" }
-                    ],
-                    "I": [
-                        { word: "Île", src: "sound_ile.png" },
-                        { word: "Iguane", emoji: "🦎" },
-                        { word: "Igloo", emoji: "🛖" },
-                        { word: "Insecte", emoji: "🐛" }
-                    ],
-                    "R": [
-                        { word: "Robot", src: "sound_robot.png" },
-                        { word: "Rose", emoji: "🌹" },
-                        { word: "Renard", emoji: "🦊" },
-                        { word: "Raisin", emoji: "🍇" },
-                        { word: "Rhinocéros", emoji: "🦏" }
-                    ],
-                    "M": [
-                        { word: "Mouton", src: "sound_mouton.png" },
-                        { word: "Maison", emoji: "🏠" },
-                        { word: "Maman", emoji: "👩" },
-                        { word: "Main", emoji: "🖐️" },
-                        { word: "Miel", emoji: "🍯" }
-                    ]
-                };
-
+                // Pre-verified list of questions without any phonetic ambiguity or multiple correct answers
+                this.questionPool = [
+                    {
+                        letter: "A",
+                        soundName: "A",
+                        hint: 'TROUVE LE SON "A" !',
+                        choices: [
+                            { word: "Avion", src: "sound_avion.png", isCorrect: true },
+                            { word: "Ours", src: "sound_ours.png", isCorrect: false },
+                            { word: "Robot", src: "sound_robot.png", isCorrect: false },
+                            { word: "Mouton", src: "sound_mouton.png", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "O",
+                        soundName: "O",
+                        hint: 'TROUVE LE SON "O" !',
+                        choices: [
+                            { word: "Robot", src: "sound_robot.png", isCorrect: true },
+                            { word: "Avion", src: "sound_avion.png", isCorrect: false },
+                            { word: "Île", src: "sound_ile.png", isCorrect: false },
+                            { word: "Miel", emoji: "🍯", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "I",
+                        soundName: "I",
+                        hint: 'TROUVE LE SON "I" !',
+                        choices: [
+                            { word: "Île", src: "sound_ile.png", isCorrect: true },
+                            { word: "Ours", src: "sound_ours.png", isCorrect: false },
+                            { word: "Mouton", src: "sound_mouton.png", isCorrect: false },
+                            { word: "Rose", emoji: "🌹", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "R",
+                        soundName: "R",
+                        hint: 'TROUVE LE SON "R" !',
+                        choices: [
+                            { word: "Robot", src: "sound_robot.png", isCorrect: true },
+                            { word: "Île", src: "sound_ile.png", isCorrect: false },
+                            { word: "Avion", src: "sound_avion.png", isCorrect: false },
+                            { word: "Mouton", src: "sound_mouton.png", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "M",
+                        soundName: "M",
+                        hint: 'TROUVE LE SON "M" !',
+                        choices: [
+                            { word: "Mouton", src: "sound_mouton.png", isCorrect: true },
+                            { word: "Ours", src: "sound_ours.png", isCorrect: false },
+                            { word: "Île", src: "sound_ile.png", isCorrect: false },
+                            { word: "Robot", src: "sound_robot.png", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "A",
+                        soundName: "A",
+                        hint: 'TROUVE LE SON "A" !',
+                        choices: [
+                            { word: "Ananas", emoji: "🍍", isCorrect: true },
+                            { word: "Miel", emoji: "🍯", isCorrect: false },
+                            { word: "Igloo", emoji: "🛖", isCorrect: false },
+                            { word: "Singe", emoji: "🐒", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "O",
+                        soundName: "O",
+                        hint: 'TROUVE LE SON "O" !',
+                        choices: [
+                            { word: "Orange", emoji: "🍊", isCorrect: true },
+                            { word: "Main", emoji: "🖐️", isCorrect: false },
+                            { word: "Ananas", emoji: "🍍", isCorrect: false },
+                            { word: "Livre", emoji: "📖", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "I",
+                        soundName: "I",
+                        hint: 'TROUVE LE SON "I" !',
+                        choices: [
+                            { word: "Igloo", emoji: "🛖", isCorrect: true },
+                            { word: "Maman", emoji: "👩", isCorrect: false },
+                            { word: "Ballon", emoji: "🎈", isCorrect: false },
+                            { word: "Renard", emoji: "🦊", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "R",
+                        soundName: "R",
+                        hint: 'TROUVE LE SON "R" !',
+                        choices: [
+                            { word: "Renard", emoji: "🦊", isCorrect: true },
+                            { word: "Maison", emoji: "🏠", isCorrect: false },
+                            { word: "Abeille", emoji: "🐝", isCorrect: false },
+                            { word: "Igloo", emoji: "🛖", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "M",
+                        soundName: "M",
+                        hint: 'TROUVE LE SON "M" !',
+                        choices: [
+                            { word: "Maison", emoji: "🏠", isCorrect: true },
+                            { word: "Rose", emoji: "🌹", isCorrect: false },
+                            { word: "Oiseau", emoji: "🐦", isCorrect: false },
+                            { word: "Abeille", emoji: "🐝", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "A",
+                        soundName: "A",
+                        hint: 'TROUVE LE SON "A" !',
+                        choices: [
+                            { word: "Arbre", emoji: "🌳", isCorrect: true },
+                            { word: "Mouton", src: "sound_mouton.png", isCorrect: false },
+                            { word: "Livre", emoji: "📖", isCorrect: false },
+                            { word: "Singe", emoji: "🐒", isCorrect: false }
+                        ]
+                    },
+                    {
+                        letter: "I",
+                        soundName: "I",
+                        hint: 'TROUVE LE SON "I" !',
+                        choices: [
+                            { word: "Iguane", emoji: "🦎", isCorrect: true },
+                            { word: "Maman", emoji: "👩", isCorrect: false },
+                            { word: "Robot", src: "sound_robot.png", isCorrect: false },
+                            { word: "Ballon", emoji: "🎈", isCorrect: false }
+                        ]
+                    }
+                ];
+ 
                 this.generateQuestions();
             }
             generateQuestions() {
                 this.questions = {};
                 
-                // Shuffled target sounds to randomize the order of rounds
-                const targets = ["A", "O", "I", "R", "M"].sort(() => Math.random() - 0.5);
+                // Shuffle the entire pre-defined verified pool of questions
+                const shuffledPool = [...this.questionPool].sort(() => Math.random() - 0.5);
                 
-                targets.forEach((letter, index) => {
+                // Select 5 questions from the shuffled pool
+                const selectedQuestions = shuffledPool.slice(0, 5);
+                
+                selectedQuestions.forEach((q, index) => {
                     const roundNum = index + 1;
                     
-                    // Pick a random correct item for the target sound
-                    const correctItems = this.soundBank[letter];
-                    const correctItem = correctItems[Math.floor(Math.random() * correctItems.length)];
-                    
-                    const choices = [
-                        { ...correctItem, isCorrect: true }
-                    ];
-                    
-                    // Pick 3 incorrect items from other sounds
-                    const otherLetters = Object.keys(this.soundBank).filter(l => l !== letter);
-                    
-                    // Shuffle other letters to select from different sounds
-                    const selectedOthers = otherLetters.sort(() => Math.random() - 0.5).slice(0, 3);
-                    
-                    selectedOthers.forEach(otherLetter => {
-                        const items = this.soundBank[otherLetter];
-                        const item = items[Math.floor(Math.random() * items.length)];
-                        choices.push({ ...item, isCorrect: false });
-                    });
+                    // Copy the question structure and shuffle its choices!
+                    const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
                     
                     this.questions[roundNum] = {
-                        letter: letter,
-                        soundName: letter,
-                        hint: `TROUVE LE SON "${letter}" !`,
-                        choices: choices
+                        letter: q.letter,
+                        soundName: q.soundName,
+                        hint: q.hint,
+                        choices: shuffledChoices
                     };
                 });
             }
@@ -7960,7 +8056,7 @@
                 btn.style.opacity = '1';
 
                 if (chosenId === correctId) {
-                    AudioSynth.playRoar();
+                    AudioSynth.playCorrect();
                     btn.style.background = '#16a34a';
                     btn.style.borderColor = '#22c55e';
                     btn.style.transform = 'scale(1.06)';
