@@ -3300,9 +3300,12 @@
             </div>
 
             <!-- Save and Close button -->
-            <div style="display: flex; justify-content: center; margin-top: 24px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: center; margin-top: 24px;">
                 <button id="btn-settings-close" class="btn-modal-action btn-modal-next" style="width: 100%; border-radius: 20px; padding: 14px 0; font-weight: 900; background: linear-gradient(135deg, #fbbf24, #f59e0b); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
                     SAUVEGARDER ET FERMER
+                </button>
+                <button id="btn-reset-all-progress" style="width: 100%; border-radius: 20px; padding: 10px 0; font-weight: 800; background: #e11d48; border: none; color: white; cursor: pointer; font-size: 0.8rem; transition: background 0.2s; text-transform: uppercase;">
+                    🗑️ Réinitialiser les récompenses de Jules
                 </button>
             </div>
         </div>
@@ -4237,6 +4240,41 @@
                 if (btnClose) {
                     btnClose.addEventListener('click', () => {
                         this.closeSettingsModal();
+                    });
+                }
+
+                const btnResetProgress = document.getElementById('btn-reset-all-progress');
+                if (btnResetProgress) {
+                    btnResetProgress.addEventListener('click', () => {
+                        const confirmReset = confirm("Voulez-vous vraiment réinitialiser toutes les récompenses et étoiles de Jules ? Cette action est définitive.");
+                        if (confirmReset) {
+                            localStorage.removeItem('jules_stars');
+                            localStorage.removeItem('jules_completed');
+                            localStorage.removeItem('jules_avatar');
+                            localStorage.removeItem('jules_unlocked_stickers');
+                            localStorage.removeItem('jules_placed_stickers');
+                            localStorage.removeItem('jules_purchased_items');
+                            localStorage.removeItem('jules_equipped_items');
+                            localStorage.removeItem('jules_shop_calib');
+                            localStorage.removeItem('jules_daily_count');
+                            localStorage.removeItem('jules_daily_unlocked');
+                            
+                            this.stars = 0;
+                            this.completedGames = {};
+                            this.avatar = 'leo';
+                            this.unlockedStickers = ['flag'];
+                            this.placedStickers = [];
+                            this.purchasedItems = [];
+                            this.equippedItems = [];
+                            this.dailyQuestCount = 0;
+                            this.dailyQuestUnlocked = false;
+                            
+                            this.saveProgress();
+                            this.closeSettingsModal();
+                            
+                            alert("La progression de Jules a bien été réinitialisée ! 🧹");
+                            location.reload();
+                        }
                     });
                 }
 
@@ -6053,7 +6091,7 @@
 
                     if (this.checkIfCorrect(this.tiles)) {
                         this.isDone = true;
-                        AudioSynth.playRoar();
+                        AudioSynth.playCorrect();
                         setTimeout(() => this.parent.onGameWin('dino_jigsaw'), 600);
                     }
                 }
@@ -6383,7 +6421,7 @@
                     this.round++;
                     setTimeout(() => {
                         if (this.round >= this.dinosaurs.length) {
-                            AudioSynth.playRoar();
+                            AudioSynth.playCorrect();
                             this.parent.onGameWin('dino_spelling');
                         } else {
                             this.locked = false;
@@ -6566,7 +6604,7 @@
                     this.round++;
                     setTimeout(() => {
                         if (this.round >= this.maxRounds) {
-                            AudioSynth.playRoar();
+                            AudioSynth.playCorrect();
                             this.parent.onGameWin('dino_tracks');
                         } else {
                             this.locked = false;
